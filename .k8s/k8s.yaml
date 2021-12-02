@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: skysight
+  namespace: default
+  labels:
+    app: skysight
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: skysight
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: skysight
+    spec:
+      containers:
+        - name: skysight
+          image: registry.cn-beijing.aliyuncs.com/fundwit/skysight:sha-498d460
+          imagePullPolicy: IfNotPresent
+          env:
+          - name: JAEGER_ENDPOINT
+            value: http://jaeger:14268/api/traces
+          - name: MYSQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: password
+                name: mysql
+          - name: MYSQL_USERNAME
+            valueFrom:
+              secretKeyRef:
+                key: username
+                name: mysql
+          - name: DATABASE_URL
+            value: mysql://${MYSQL_USERNAME}:${MYSQL_PASSWORD}@(mysql.default:3306)/skysight?charset=utf8mb4&parseTime=True&loc=Local
+          ports:
+            - containerPort: 80
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+      dnsPolicy: ClusterFirst
+      imagePullSecrets:
+        - name: cr-aliyun
+      restartPolicy: Always
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: skysight
+  name: skysight
+  namespace: default
+spec:
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: 80
+  selector:
+    app: skysight
+  sessionAffinity: None
+  type: ClusterIP
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: skysight
+  namespace: default
+spec:
+  tls:
+    - hosts:
+        - skysight-core.fundwit.com
+      secretName: tls-fundwit.com
+  rules:
+    - host: skysight-core.fundwit.com
+      http:
+        paths:
+          - backend:
+              service:
+                name: skysight
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix
