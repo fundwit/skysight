@@ -3,7 +3,8 @@ package tracing
 import (
 	"io"
 	"os"
-	"skysight/introspect"
+
+	"skysight/infra/meta"
 
 	"github.com/opentracing/opentracing-go"
 	"github.com/uber/jaeger-client-go"
@@ -16,7 +17,7 @@ func NewTracer() (opentracing.Tracer, io.Closer, error) {
 	// Sample configuration for testing. Use constant sampling to sample every
 	// trace and enable LogSpan to log every span via configured Logger.
 	cfg := &jaegerconfig.Configuration{
-		ServiceName: introspect.GetServiceMeta().Name,
+		ServiceName: meta.GetServiceMeta().Name,
 		Sampler: &jaegerconfig.SamplerConfig{
 			Type:  jaeger.SamplerTypeConst,
 			Param: 1,

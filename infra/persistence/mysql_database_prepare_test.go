@@ -1,0 +1,20 @@
+package persistence
+
+import (
+	"skysight/bizerror"
+	"testing"
+
+	. "github.com/onsi/gomega"
+)
+
+func TestPrepareMysqlDatabase(t *testing.T) {
+	RegisterTestingT(t)
+
+	t.Run("only support mysql", func(t *testing.T) {
+		Expect(PrepareMysqlDatabase("xxxx://aaa:bbb")).To(Equal(bizerror.ErrUnexpectedDatabase))
+	})
+
+	t.Run("error on invalid database url", func(t *testing.T) {
+		Expect(PrepareMysqlDatabase("aa?bb/cc")).To(Equal(bizerror.ErrInvalidDatabaseUrl))
+	})
+}

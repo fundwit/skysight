@@ -151,6 +151,6 @@ func (e *demoError) Error() string {
 func (e *demoError) Respond() *bizerror.BizErrorDetail {
 	return &bizerror.BizErrorDetail{
 		Status: 444, Code: "common.demo",
-		Message: e.Error(), Data: e.Data, Cause: nil,
+		Message: e.Error(), Data: e.Data,
 	}
 }

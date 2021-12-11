@@ -6,7 +6,7 @@ import (
 	"github.com/opentracing/opentracing-go/ext"
 )
 
-func TracingIngress() gin.HandlerFunc {
+func TracingRestAPI() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		tracer := opentracing.GlobalTracer()
 		spanCtx, _ := tracer.Extract(opentracing.HTTPHeaders, opentracing.HTTPHeadersCarrier(ctx.Request.Header))

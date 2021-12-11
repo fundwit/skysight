@@ -14,14 +14,14 @@ import (
 	"github.com/opentracing/opentracing-go/mocktracer"
 )
 
-func TestTracingIngress(t *testing.T) {
+func TestTracingRestAPI(t *testing.T) {
 	RegisterTestingT(t)
 
 	tracer := mocktracer.New()
 	opentracing.SetGlobalTracer(tracer)
 
 	router := gin.Default()
-	router.Use(TracingIngress())
+	router.Use(TracingRestAPI())
 	router.GET("/test/:id", func(c *gin.Context) {
 		c.Status(http.StatusOK)
 	})
