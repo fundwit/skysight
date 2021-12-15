@@ -18,15 +18,15 @@ var (
 )
 
 type Repository struct {
-	Uri string `json:"uri" binding:"required,lte=250"`
+	Uri string `json:"uri" binding:"required,lte=250" gorm:"size:512;type:VARCHAR(512) NOT NULL"`
 }
 
 type RepositoryRecord struct {
-	ID types.ID `json:"id" gorm:"primary_key"`
+	ID types.ID `json:"id" gorm:"primary_key;type:BIGINT UNSIGNED NOT NULL"`
 
 	Repository
 
-	CreateTime types.Timestamp `json:"createTime"`
+	CreateTime types.Timestamp `json:"createTime" gorm:"type:DATETIME(6) NOT NULL"`
 }
 
 type RepositoryQuery struct {

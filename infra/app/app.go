@@ -61,7 +61,7 @@ func Bootstrap() {
 	}
 	defer persistence.StopGormDB(gormDB)
 	persistence.ActiveGormDB = gormDB
-	gormDB.AutoMigrate(repository.RepositoryRecord{})
+	gormDB.AutoMigrate(&repository.RepositoryRecord{})
 	logrus.Infoln("database setting success")
 
 	// http server

@@ -23,6 +23,27 @@ func TestRepositoryTableName(t *testing.T) {
 	})
 }
 
+func TestRepositoryTableCreation(t *testing.T) {
+	RegisterTestingT(t)
+
+	t.Run("table create sql should be correct", func(t *testing.T) {
+		gormDB, mock := testinfra.SetUpMockSql()
+		const sqlExpr = "CREATE TABLE `repositories` (" +
+			"`id` BIGINT UNSIGNED NOT NULL," +
+			"`uri` VARCHAR(512) NOT NULL," +
+			"`create_time` DATETIME(6) NOT NULL," +
+			"PRIMARY KEY (`id`)" +
+			")"
+
+		mock.ExpectExec(regexp.QuoteMeta(sqlExpr)).
+			WillReturnResult(sqlmock.NewResult(1, 1))
+
+		Expect(gormDB.AutoMigrate(&repository.RepositoryRecord{})).ShouldNot(HaveOccurred())
+
+		Expect(mock.ExpectationsWereMet()).ShouldNot(HaveOccurred())
+	})
+}
+
 func TestCreateRepository(t *testing.T) {
 	RegisterTestingT(t)
 
