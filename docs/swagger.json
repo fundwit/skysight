@@ -1,0 +1,155 @@
+{
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "swagger": "2.0",
+    "info": {
+        "description": "A metadata service for changes.",
+        "title": "skysight",
+        "contact": {},
+        "version": "v0.1.x"
+    },
+    "paths": {
+        "/v1/repositories": {
+            "get": {
+                "operationId": "repository-list",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "query keyword",
+                        "name": "keyword",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/repository.RepositoryRecord"
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "error",
+                        "schema": {
+                            "$ref": "#/definitions/bizerror.ErrorBody"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "operationId": "repository-add",
+                "parameters": [
+                    {
+                        "description": "request body",
+                        "name": "_",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/repository.Repository"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/misc.IdObject"
+                        }
+                    },
+                    "default": {
+                        "description": "error",
+                        "schema": {
+                            "$ref": "#/definitions/bizerror.ErrorBody"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/repositories/{id}": {
+            "delete": {
+                "operationId": "repository-delete",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id of repository",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "response body is empty",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "default": {
+                        "description": "error",
+                        "schema": {
+                            "$ref": "#/definitions/bizerror.ErrorBody"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "bizerror.ErrorBody": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "data": {},
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "misc.IdObject": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "repository.Repository": {
+            "type": "object",
+            "required": [
+                "uri"
+            ],
+            "properties": {
+                "uri": {
+                    "type": "string",
+                    "maxLength": 250
+                }
+            }
+        },
+        "repository.RepositoryRecord": {
+            "type": "object",
+            "required": [
+                "uri"
+            ],
+            "properties": {
+                "createTime": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "uri": {
+                    "type": "string",
+                    "maxLength": 250
+                }
+            }
+        }
+    }
+}

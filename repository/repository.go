@@ -30,6 +30,7 @@ type RepositoryRecord struct {
 }
 
 type RepositoryQuery struct {
+	Keyword string `form:"keyword" binding:"required,lte=250"`
 }
 
 func (r *RepositoryRecord) TableName() string {

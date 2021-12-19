@@ -12,12 +12,12 @@ type requestPath struct {
 	ID types.ID `uri:"id" binding:"required"`
 }
 
-type idObject struct {
+type IdObject struct {
 	ID types.ID `json:"id"`
 }
 
-func IdObject(id types.ID) *idObject {
-	return &idObject{ID: id}
+func NewIdObject(id types.ID) *IdObject {
+	return &IdObject{ID: id}
 }
 
 func BindingPathID(c *gin.Context) (types.ID, error) {

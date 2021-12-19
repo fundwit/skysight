@@ -1,0 +1,100 @@
+consumes:
+- application/json
+definitions:
+  bizerror.ErrorBody:
+    properties:
+      code:
+        type: string
+      data: {}
+      message:
+        type: string
+    type: object
+  misc.IdObject:
+    properties:
+      id:
+        type: integer
+    type: object
+  repository.Repository:
+    properties:
+      uri:
+        maxLength: 250
+        type: string
+    required:
+    - uri
+    type: object
+  repository.RepositoryRecord:
+    properties:
+      createTime:
+        type: string
+      id:
+        type: integer
+      uri:
+        maxLength: 250
+        type: string
+    required:
+    - uri
+    type: object
+info:
+  contact: {}
+  description: A metadata service for changes.
+  title: skysight
+  version: v0.1.x
+paths:
+  /v1/repositories:
+    get:
+      operationId: repository-list
+      parameters:
+      - description: query keyword
+        in: query
+        name: keyword
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/repository.RepositoryRecord'
+            type: array
+        default:
+          description: error
+          schema:
+            $ref: '#/definitions/bizerror.ErrorBody'
+    post:
+      operationId: repository-add
+      parameters:
+      - description: request body
+        in: body
+        name: _
+        required: true
+        schema:
+          $ref: '#/definitions/repository.Repository'
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/misc.IdObject'
+        default:
+          description: error
+          schema:
+            $ref: '#/definitions/bizerror.ErrorBody'
+  /v1/repositories/{id}:
+    delete:
+      operationId: repository-delete
+      parameters:
+      - description: id of repository
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: response body is empty
+          schema:
+            type: string
+        default:
+          description: error
+          schema:
+            $ref: '#/definitions/bizerror.ErrorBody'
+produces:
+- application/json
+swagger: "2.0"

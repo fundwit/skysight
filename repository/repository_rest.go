@@ -21,6 +21,11 @@ func RegisterRepositoriesRestAPI(r *gin.Engine, middleWares ...gin.HandlerFunc) 
 	g.DELETE(":id", handleDeleteRepository)
 }
 
+// @ID repository-add
+// @Param _ body repository.Repository true "request body"
+// @Success 201 {object} misc.IdObject
+// @Failure default {object} bizerror.ErrorBody "error"
+// @Router /v1/repositories [post]
 func handleCreateRepository(c *gin.Context) {
 	creation := Repository{}
 	err := c.ShouldBindBodyWith(&creation, binding.JSON)
@@ -32,9 +37,14 @@ func handleCreateRepository(c *gin.Context) {
 	if err != nil {
 		panic(err)
 	}
-	c.JSON(http.StatusCreated, misc.IdObject(id))
+	c.JSON(http.StatusCreated, misc.NewIdObject(id))
 }
 
+// @ID repository-list
+// @Param keyword query string false "query keyword"
+// @Success 200 {array} repository.RepositoryRecord
+// @Failure default {object} bizerror.ErrorBody "error"
+// @Router /v1/repositories [get]
 func handleQueryRepositories(c *gin.Context) {
 	query := RepositoryQuery{}
 	// err := c.MustBindWith(&query, binding.Query)
@@ -48,6 +58,11 @@ func handleQueryRepositories(c *gin.Context) {
 	c.JSON(http.StatusOK, record)
 }
 
+// @ID repository-delete
+// @Param id path uint64 true "id of repository"
+// @Success 204 {object} string "response body is empty"
+// @Failure default {object} bizerror.ErrorBody "error"
+// @Router /v1/repositories/{id} [delete]
 func handleDeleteRepository(c *gin.Context) {
 	id, err := misc.BindingPathID(c)
 	if err != nil {

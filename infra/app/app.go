@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/signal"
 	"skysight/bizerror"
+	"skysight/infra/doc"
 	"skysight/infra/meta"
 	"skysight/infra/persistence"
 	"skysight/infra/tracing"
@@ -77,6 +78,7 @@ func Bootstrap() {
 
 	repository.RegisterRepositoriesRestAPI(engine)
 	meta.RegisterMetaRestAPI(engine)
+	doc.RegisterDocsAPI(engine)
 
 	StartHTTPServer(engine)
 }
