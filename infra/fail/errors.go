@@ -1,4 +1,4 @@
-package bizerror
+package fail
 
 import (
 	"errors"

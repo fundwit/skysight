@@ -6,8 +6,8 @@ import (
 )
 
 type (
-	// GetLngHandler ...
-	GetLngHandler = func(context *gin.Context, defaultLng string) string
+	// LangResolver ...
+	LangResolver = func(context *gin.Context, defaultLang string) string
 
 	// Option ...
 	Option func(*GinI18n)
@@ -26,10 +26,10 @@ func WithBundle(config *BundleCfg) Option {
 	}
 }
 
-// WithGetLngHandle ...
-func WithGetLngHandle(handler GetLngHandler) Option {
+// WithCustomLangResolver ...
+func WithCustomLangResolver(f LangResolver) Option {
 	return func(g *GinI18n) {
-		g.setGetLngHandler(handler)
+		g.setLangResolver(f)
 	}
 }
 
@@ -39,8 +39,8 @@ var atI18n *GinI18n
 func newI18n(opts ...Option) {
 	// init default value
 	ins := &GinI18n{
-		getLngHandler: defaultGetLngHandler,
-		bundleConfig:  defaultBundleConfig,
+		langResolver: defaultLangResolver,
+		bundleConfig: defaultBundleConfig,
 	}
 
 	// overwrite default value by options

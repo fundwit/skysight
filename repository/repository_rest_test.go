@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
-	"skysight/bizerror"
+	"skysight/infra/fail"
 	"skysight/infra/sessions"
 	"skysight/repository"
 	"skysight/testinfra"
@@ -21,7 +21,7 @@ func TestQueryRepositoriesAPI(t *testing.T) {
 	RegisterTestingT(t)
 
 	router := gin.Default()
-	router.Use(bizerror.ErrorHandling())
+	router.Use(fail.ErrorHandling())
 	repository.RegisterRepositoriesRestAPI(router)
 
 	// t.Run("should be able to validate parameters", func(t *testing.T) {
@@ -66,7 +66,7 @@ func TestCreateRepositoryAPI(t *testing.T) {
 	RegisterTestingT(t)
 
 	router := gin.Default()
-	router.Use(bizerror.ErrorHandling())
+	router.Use(fail.ErrorHandling())
 	repository.RegisterRepositoriesRestAPI(router)
 
 	t.Run("should be able to validate parameters", func(t *testing.T) {
@@ -119,7 +119,7 @@ func TestDeleteRepositoryAPI(t *testing.T) {
 	RegisterTestingT(t)
 
 	router := gin.Default()
-	router.Use(bizerror.ErrorHandling())
+	router.Use(fail.ErrorHandling())
 	repository.RegisterRepositoriesRestAPI(router)
 
 	t.Run("should be able to validate parameters", func(t *testing.T) {

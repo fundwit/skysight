@@ -29,6 +29,19 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/": {
+            "get": {
+                "operationId": "get-meta-infomation",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/meta.ServiceInfo"
+                        }
+                    }
+                }
+            }
+        },
         "/v1/repositories": {
             "get": {
                 "operationId": "repository-list",
@@ -53,7 +66,7 @@ var doc = `{
                     "default": {
                         "description": "error",
                         "schema": {
-                            "$ref": "#/definitions/bizerror.ErrorBody"
+                            "$ref": "#/definitions/fail.ErrorBody"
                         }
                     }
                 }
@@ -81,7 +94,7 @@ var doc = `{
                     "default": {
                         "description": "error",
                         "schema": {
-                            "$ref": "#/definitions/bizerror.ErrorBody"
+                            "$ref": "#/definitions/fail.ErrorBody"
                         }
                     }
                 }
@@ -109,7 +122,7 @@ var doc = `{
                     "default": {
                         "description": "error",
                         "schema": {
-                            "$ref": "#/definitions/bizerror.ErrorBody"
+                            "$ref": "#/definitions/fail.ErrorBody"
                         }
                     }
                 }
@@ -117,7 +130,7 @@ var doc = `{
         }
     },
     "definitions": {
-        "bizerror.ErrorBody": {
+        "fail.ErrorBody": {
             "type": "object",
             "properties": {
                 "code": {
@@ -125,6 +138,32 @@ var doc = `{
                 },
                 "data": {},
                 "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "meta.ServiceInfo": {
+            "type": "object",
+            "properties": {
+                "duration": {
+                    "type": "integer"
+                },
+                "instanceId": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "numCpu": {
+                    "type": "integer"
+                },
+                "numGoroutine": {
+                    "type": "integer"
+                },
+                "numMaxProcs": {
+                    "type": "integer"
+                },
+                "startTime": {
                     "type": "string"
                 }
             }

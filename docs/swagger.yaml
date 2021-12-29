@@ -1,12 +1,29 @@
 consumes:
 - application/json
 definitions:
-  bizerror.ErrorBody:
+  fail.ErrorBody:
     properties:
       code:
         type: string
       data: {}
       message:
+        type: string
+    type: object
+  meta.ServiceInfo:
+    properties:
+      duration:
+        type: integer
+      instanceId:
+        type: string
+      name:
+        type: string
+      numCpu:
+        type: integer
+      numGoroutine:
+        type: integer
+      numMaxProcs:
+        type: integer
+      startTime:
         type: string
     type: object
   misc.IdObject:
@@ -40,6 +57,14 @@ info:
   title: skysight
   version: v0.1.x
 paths:
+  /:
+    get:
+      operationId: get-meta-infomation
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/meta.ServiceInfo'
   /v1/repositories:
     get:
       operationId: repository-list
@@ -58,7 +83,7 @@ paths:
         default:
           description: error
           schema:
-            $ref: '#/definitions/bizerror.ErrorBody'
+            $ref: '#/definitions/fail.ErrorBody'
     post:
       operationId: repository-add
       parameters:
@@ -76,7 +101,7 @@ paths:
         default:
           description: error
           schema:
-            $ref: '#/definitions/bizerror.ErrorBody'
+            $ref: '#/definitions/fail.ErrorBody'
   /v1/repositories/{id}:
     delete:
       operationId: repository-delete
@@ -94,7 +119,7 @@ paths:
         default:
           description: error
           schema:
-            $ref: '#/definitions/bizerror.ErrorBody'
+            $ref: '#/definitions/fail.ErrorBody'
 produces:
 - application/json
 swagger: "2.0"

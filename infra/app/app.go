@@ -6,12 +6,12 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"skysight/bizerror"
 	"skysight/infra/doc"
+	"skysight/infra/fail"
+	"skysight/infra/localize"
 	"skysight/infra/meta"
 	"skysight/infra/persistence"
 	"skysight/infra/tracing"
-	"skysight/localize"
 	"skysight/repository"
 	"strconv"
 	"syscall"
@@ -72,7 +72,7 @@ func Bootstrap() {
 		gin.LoggerWithConfig(gin.LoggerConfig{SkipPaths: []string{"/"}}),
 		localize.LocalizeMiddleware("./i18n"),
 		tracing.TracingRestAPI(),
-		bizerror.ErrorHandling(),
+		fail.ErrorHandling(),
 		// gin.Recovery(),
 	)
 

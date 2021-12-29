@@ -2,7 +2,7 @@ package repository
 
 import (
 	"net/http"
-	"skysight/bizerror"
+	"skysight/infra/fail"
 	"skysight/infra/sessions"
 	"skysight/misc"
 
@@ -24,13 +24,13 @@ func RegisterRepositoriesRestAPI(r *gin.Engine, middleWares ...gin.HandlerFunc) 
 // @ID repository-add
 // @Param _ body repository.Repository true "request body"
 // @Success 201 {object} misc.IdObject
-// @Failure default {object} bizerror.ErrorBody "error"
+// @Failure default {object} fail.ErrorBody "error"
 // @Router /v1/repositories [post]
 func handleCreateRepository(c *gin.Context) {
 	creation := Repository{}
 	err := c.ShouldBindBodyWith(&creation, binding.JSON)
 	if err != nil {
-		panic(&bizerror.ErrBadParam{Cause: err})
+		panic(&fail.ErrBadParam{Cause: err})
 	}
 	// session.ExtractSessionFromGinContext(c)
 	id, err := CreateRepositoryFunc(creation, &sessions.Session{Context: c.Request.Context()})
@@ -43,13 +43,13 @@ func handleCreateRepository(c *gin.Context) {
 // @ID repository-list
 // @Param keyword query string false "query keyword"
 // @Success 200 {array} repository.RepositoryRecord
-// @Failure default {object} bizerror.ErrorBody "error"
+// @Failure default {object} fail.ErrorBody "error"
 // @Router /v1/repositories [get]
 func handleQueryRepositories(c *gin.Context) {
 	query := RepositoryQuery{}
 	// err := c.MustBindWith(&query, binding.Query)
 	// if err != nil {
-	// 	panic(&bizerror.ErrBadParam{Cause: err})
+	// 	panic(&fail.ErrBadParam{Cause: err})
 	// }
 	record, err := QueryRepositoriesFunc(query, &sessions.Session{Context: c.Request.Context()})
 	if err != nil {
@@ -61,7 +61,7 @@ func handleQueryRepositories(c *gin.Context) {
 // @ID repository-delete
 // @Param id path uint64 true "id of repository"
 // @Success 204 {object} string "response body is empty"
-// @Failure default {object} bizerror.ErrorBody "error"
+// @Failure default {object} fail.ErrorBody "error"
 // @Router /v1/repositories/{id} [delete]
 func handleDeleteRepository(c *gin.Context) {
 	id, err := misc.BindingPathID(c)

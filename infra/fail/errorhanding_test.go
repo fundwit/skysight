@@ -1,11 +1,11 @@
-package bizerror_test
+package fail_test
 
 import (
 	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"skysight/bizerror"
+	"skysight/infra/fail"
 	"skysight/testinfra"
 	"testing"
 
@@ -19,29 +19,29 @@ func TestPanicHandling(t *testing.T) {
 
 	t.Run("should be able to handle panic with error", func(t *testing.T) {
 		r := gin.Default()
-		r.Use(bizerror.ErrorHandling())
+		r.Use(fail.ErrorHandling())
 
 		r.GET("/", func(c *gin.Context) { panic(fmt.Errorf("some error")) })
 		req := httptest.NewRequest(http.MethodGet, "/", nil)
 		status, body, _ := testinfra.ExecuteRequest(req, r)
 		Expect(status).To(Equal(http.StatusInternalServerError))
-		Expect(body).To(MatchJSON(`{"code":"` + bizerror.ErrUnexpected.Error() + `", "message":"some error", "data": null}`))
+		Expect(body).To(MatchJSON(`{"code":"` + fail.ErrUnexpected.Error() + `", "message":"some error", "data": null}`))
 	})
 
 	t.Run("should be able to handle panic with other object", func(t *testing.T) {
 		r := gin.Default()
-		r.Use(bizerror.ErrorHandling())
+		r.Use(fail.ErrorHandling())
 
 		r.GET("/", func(c *gin.Context) { panic("some error") })
 		req := httptest.NewRequest(http.MethodGet, "/", nil)
 		status, body, _ := testinfra.ExecuteRequest(req, r)
 		Expect(status).To(Equal(http.StatusInternalServerError))
-		Expect(body).To(MatchJSON(`{"code":"` + bizerror.ErrUnexpected.Error() + `", "message":"some error", "data": null}`))
+		Expect(body).To(MatchJSON(`{"code":"` + fail.ErrUnexpected.Error() + `", "message":"some error", "data": null}`))
 	})
 
 	t.Run("should be able to handle panic with biz error", func(t *testing.T) {
 		r := gin.Default()
-		r.Use(bizerror.ErrorHandling())
+		r.Use(fail.ErrorHandling())
 
 		r.GET("/", func(c *gin.Context) {
 			panic(&demoError{Message: "some message in demo error", Data: 1234})
@@ -54,7 +54,7 @@ func TestPanicHandling(t *testing.T) {
 
 	t.Run("should not be able to handle panic with nil", func(t *testing.T) {
 		r := gin.Default()
-		r.Use(bizerror.ErrorHandling())
+		r.Use(fail.ErrorHandling())
 
 		r.GET("/", func(c *gin.Context) { panic(nil) })
 		req := httptest.NewRequest(http.MethodGet, "/", nil)
@@ -69,7 +69,7 @@ func TestGinErrorHandling(t *testing.T) {
 
 	t.Run("should be able to handle error in gin.Context.Errors", func(t *testing.T) {
 		r := gin.Default()
-		r.Use(bizerror.ErrorHandling())
+		r.Use(fail.ErrorHandling())
 
 		r.GET("/", func(c *gin.Context) {
 			c.Errors = append(c.Errors, &gin.Error{Err: errors.New("error1")})
@@ -78,12 +78,12 @@ func TestGinErrorHandling(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "/", nil)
 		status, body, _ := testinfra.ExecuteRequest(req, r)
 		Expect(status).To(Equal(http.StatusInternalServerError))
-		Expect(body).To(MatchJSON(`{"code":"` + bizerror.ErrUnexpected.Error() + `", "message":"error2", "data": null}`))
+		Expect(body).To(MatchJSON(`{"code":"` + fail.ErrUnexpected.Error() + `", "message":"error2", "data": null}`))
 	})
 
 	t.Run("should be able to handle panic error first even gin.Context.Errors is not empty", func(t *testing.T) {
 		r := gin.Default()
-		r.Use(bizerror.ErrorHandling())
+		r.Use(fail.ErrorHandling())
 
 		r.GET("/", func(c *gin.Context) {
 			c.Errors = append(c.Errors, &gin.Error{Err: errors.New("error1")})
@@ -92,12 +92,12 @@ func TestGinErrorHandling(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "/", nil)
 		status, body, _ := testinfra.ExecuteRequest(req, r)
 		Expect(status).To(Equal(http.StatusInternalServerError))
-		Expect(body).To(MatchJSON(`{"code":"` + bizerror.ErrUnexpected.Error() + `", "message":"panic error", "data": null}`))
+		Expect(body).To(MatchJSON(`{"code":"` + fail.ErrUnexpected.Error() + `", "message":"panic error", "data": null}`))
 	})
 
 	t.Run("should handle gin.Context.Errors when panic nil", func(t *testing.T) {
 		r := gin.Default()
-		r.Use(bizerror.ErrorHandling())
+		r.Use(fail.ErrorHandling())
 
 		r.GET("/", func(c *gin.Context) {
 			c.Errors = append(c.Errors, &gin.Error{Err: errors.New("error1")})
@@ -106,7 +106,7 @@ func TestGinErrorHandling(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "/", nil)
 		status, body, _ := testinfra.ExecuteRequest(req, r)
 		Expect(status).To(Equal(http.StatusInternalServerError))
-		Expect(body).To(MatchJSON(`{"code":"` + bizerror.ErrUnexpected.Error() + `", "message":"error1", "data": null}`))
+		Expect(body).To(MatchJSON(`{"code":"` + fail.ErrUnexpected.Error() + `", "message":"error1", "data": null}`))
 	})
 }
 
@@ -115,10 +115,10 @@ func TestSpecifiedErrorHandling(t *testing.T) {
 
 	t.Run("should handle common.ErrForbidden", func(t *testing.T) {
 		r := gin.Default()
-		r.Use(bizerror.ErrorHandling())
+		r.Use(fail.ErrorHandling())
 
 		r.GET("/", func(c *gin.Context) {
-			_ = c.Error(bizerror.ErrForbidden)
+			_ = c.Error(fail.ErrForbidden)
 		})
 		req := httptest.NewRequest(http.MethodGet, "/", nil)
 		status, body, _ := testinfra.ExecuteRequest(req, r)
@@ -128,7 +128,7 @@ func TestSpecifiedErrorHandling(t *testing.T) {
 
 	t.Run("should handle gorm.ErrRecordNotFound", func(t *testing.T) {
 		r := gin.Default()
-		r.Use(bizerror.ErrorHandling())
+		r.Use(fail.ErrorHandling())
 
 		r.GET("/", func(c *gin.Context) {
 			c.Error(gorm.ErrRecordNotFound)
@@ -148,8 +148,8 @@ type demoError struct {
 func (e *demoError) Error() string {
 	return fmt.Sprintf("demo error: %s", e.Message)
 }
-func (e *demoError) Respond() *bizerror.BizErrorDetail {
-	return &bizerror.BizErrorDetail{
+func (e *demoError) Respond() *fail.BizErrorDetail {
+	return &fail.BizErrorDetail{
 		Status: 444, Code: "common.demo",
 		Message: e.Error(), Data: e.Data,
 	}

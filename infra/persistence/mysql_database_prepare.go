@@ -2,7 +2,7 @@ package persistence
 
 import (
 	"os"
-	"skysight/bizerror"
+	"skysight/infra/fail"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -16,7 +16,7 @@ const mysqlDriverName = "mysql"
 func PrepareMysqlDatabase(dsn string) error {
 	driverName, driverArgs := splitName(dsn)
 	if driverName != "" && driverName != mysqlDriverName {
-		return bizerror.ErrUnexpectedDatabase
+		return fail.ErrUnexpectedDatabase
 	}
 
 	databaseName, rootDriverArgs, err := ExtractDatabaseName(driverArgs)

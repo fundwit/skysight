@@ -1,7 +1,7 @@
 package sessions
 
 import (
-	"skysight/bizerror"
+	"skysight/infra/fail"
 
 	"github.com/gin-gonic/gin"
 )
@@ -10,15 +10,15 @@ func SessionFilter() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		token, err := ctx.Cookie(KeySecToken)
 		if err != nil {
-			panic(bizerror.ErrUnauthenticated)
+			panic(fail.ErrUnauthenticated)
 		}
 		securityContextValue, found := TokenCache.Get(token)
 		if !found {
-			panic(bizerror.ErrUnauthenticated)
+			panic(fail.ErrUnauthenticated)
 		}
 		secCtx, ok := securityContextValue.(*Session)
 		if !ok {
-			panic(bizerror.ErrUnauthenticated)
+			panic(fail.ErrUnauthenticated)
 		}
 		InjectSessionIntoGinContext(ctx, secCtx)
 		ctx.Next()

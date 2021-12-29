@@ -1,7 +1,7 @@
 package misc
 
 import (
-	"skysight/bizerror"
+	"skysight/infra/fail"
 	"strconv"
 
 	"github.com/fundwit/go-commons/types"
@@ -25,9 +25,9 @@ func BindingPathID(c *gin.Context) (types.ID, error) {
 	if err := c.ShouldBindUri(&p); err != nil {
 		// maybe: strconv.NumError{Func, Num, Err: strconv.ErrRange|strconv.ErrSyntax|...}
 		if d, ok := err.(*strconv.NumError); ok {
-			return 0, &bizerror.ErrBadParam{Param: "id", InvalidValue: d.Num, Cause: err}
+			return 0, &fail.ErrBadParam{Param: "id", InvalidValue: d.Num, Cause: err}
 		}
-		return 0, &bizerror.ErrBadParam{Cause: err}
+		return 0, &fail.ErrBadParam{Cause: err}
 	}
 	return p.ID, nil
 }

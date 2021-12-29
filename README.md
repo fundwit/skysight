@@ -10,3 +10,10 @@ aggregated metadata for git commit.
 - Commit
 - Branch
 - Tag
+
+
+
+Generate swagger document
+```shell
+swag init --parseDependency
+```

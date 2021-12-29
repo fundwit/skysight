@@ -3,7 +3,7 @@ package persistence
 import (
 	"errors"
 	"os"
-	"skysight/bizerror"
+	"skysight/infra/fail"
 	"strings"
 )
 
@@ -37,7 +37,7 @@ func ExtractDatabaseName(mysqlDriverArgs string) (string, string, error) {
 	}
 
 	// ..?../..
-	return "", "", bizerror.ErrInvalidDatabaseUrl
+	return "", "", fail.ErrInvalidDatabaseUrl
 }
 
 func splitName(dsn string) (string, string) {

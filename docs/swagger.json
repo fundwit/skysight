@@ -13,6 +13,19 @@
         "version": "v0.1.x"
     },
     "paths": {
+        "/": {
+            "get": {
+                "operationId": "get-meta-infomation",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/meta.ServiceInfo"
+                        }
+                    }
+                }
+            }
+        },
         "/v1/repositories": {
             "get": {
                 "operationId": "repository-list",
@@ -37,7 +50,7 @@
                     "default": {
                         "description": "error",
                         "schema": {
-                            "$ref": "#/definitions/bizerror.ErrorBody"
+                            "$ref": "#/definitions/fail.ErrorBody"
                         }
                     }
                 }
@@ -65,7 +78,7 @@
                     "default": {
                         "description": "error",
                         "schema": {
-                            "$ref": "#/definitions/bizerror.ErrorBody"
+                            "$ref": "#/definitions/fail.ErrorBody"
                         }
                     }
                 }
@@ -93,7 +106,7 @@
                     "default": {
                         "description": "error",
                         "schema": {
-                            "$ref": "#/definitions/bizerror.ErrorBody"
+                            "$ref": "#/definitions/fail.ErrorBody"
                         }
                     }
                 }
@@ -101,7 +114,7 @@
         }
     },
     "definitions": {
-        "bizerror.ErrorBody": {
+        "fail.ErrorBody": {
             "type": "object",
             "properties": {
                 "code": {
@@ -109,6 +122,32 @@
                 },
                 "data": {},
                 "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "meta.ServiceInfo": {
+            "type": "object",
+            "properties": {
+                "duration": {
+                    "type": "integer"
+                },
+                "instanceId": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "numCpu": {
+                    "type": "integer"
+                },
+                "numGoroutine": {
+                    "type": "integer"
+                },
+                "numMaxProcs": {
+                    "type": "integer"
+                },
+                "startTime": {
                     "type": "string"
                 }
             }

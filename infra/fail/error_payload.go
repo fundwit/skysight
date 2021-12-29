@@ -1,4 +1,4 @@
-package bizerror
+package fail
 
 type ErrorBody struct {
 	Code    string      `json:"code"`
