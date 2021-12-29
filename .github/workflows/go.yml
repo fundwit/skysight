@@ -6,6 +6,9 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    env:
+      SERVICE_NAME: skysight
+
     steps:
 
     - name: Set up Go 1.x
@@ -56,7 +59,7 @@ jobs:
         TZ='Asia/Shanghai' go test -race -coverprofile=coverage.txt -covermode=atomic ./...
         bash <(curl -s https://codecov.io/bash)
 
-    - name: codecov gate
+    - name: code coverage gate
       run: |
         curl -s -o jq https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
         chmod +x jq
@@ -64,7 +67,7 @@ jobs:
 
         sleep 20
         cov_data=$(curl -s -H "Authorization: $CODECOV_TOKEN" \
-                  https://codecov.io/api/gh/fundwit/skysight/commit/${GITHUB_SHA})
+                  https://codecov.io/api/gh/fundwit/${SERVICE_NAME}/commit/${GITHUB_SHA})
 
         parent_cov=$(echo $cov_data | jq -r .commit.parent_totals.c)
         current_cov=$(echo $cov_data | jq -r .commit.totals.c)
@@ -86,7 +89,7 @@ jobs:
           exit 1
         fi
 
-    - name: Generte Build Info File
+    - name: Generate Build Info File
       run:  |
         timestamp=$(TZ='Asia/Shanghai' date -d today +"%Y-%m-%dT%H:%M:%S+08:00")
         echo "BUILD_TIMESTAMP=${timestamp}" >> $GITHUB_ENV
@@ -112,7 +115,7 @@ jobs:
     - name: Build
       run: |
         go build -v .
-        mv skysight .docker/
+        mv ${SERVICE_NAME} .docker/
         cp -r i18n .docker/
 
     - name: Build and push Docker images
@@ -124,7 +127,7 @@ jobs:
         cat .docker/Dockerfile
 
         registry=registry.cn-beijing.aliyuncs.com
-        imageName="${registry}/fundwit/skysight:${BUILD_VERSION}"
+        imageName="${registry}/fundwit/${SERVICE_NAME}:${BUILD_VERSION}"
         echo "image name: $imageName"
         echo "IMAGE_NAME=${imageName}" >> $GITHUB_ENV
 
@@ -147,14 +150,14 @@ jobs:
         https://${{secrets.FUNDWIT_CODE_USERNAME_PASSWORD}}@code.fundwit.com
         EOF
 
-        git remote add origin https://code.fundwit.com/infra/skysight.git
+        git remote add origin https://code.fundwit.com/infra/${SERVICE_NAME}.git
 
         git -c protocol.version=2 fetch --no-tags --prune --progress --no-recurse-submodules --depth=1 origin master
         git checkout --progress --force -B master refs/remotes/origin/master
         git log -1
         git config --local user.name ci-bot
         git config --local user.email fundwit@qq.com
-        sed -i "s|image: registry.cn-beijing.aliyuncs.com/fundwit/skysight:.*|image: ${IMAGE_NAME}|g" deploy.yaml
+        sed -i "s|image: registry.cn-beijing.aliyuncs.com/fundwit/${SERVICE_NAME}:.*|image: ${IMAGE_NAME}|g" deploy.yaml
         git add deploy.yaml
         git commit -a -m "update version to '$BUILD_VERSION'"
         git push
