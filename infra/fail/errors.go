@@ -6,11 +6,10 @@ import (
 )
 
 var ErrUnexpected = errors.New("common.internal_server_error")
-
 var ErrInvalidArguments = errors.New("invalid arguments")
-
 var ErrUnauthenticated = errors.New("unauthenticated")
 var ErrForbidden = errors.New("forbidden")
+
 var ErrWorkflowIsReferenced = errors.New("workflow is referenced")
 var ErrUnknownState = errors.New("unknown workflow state")
 var ErrStateExisted = errors.New("state existed")

@@ -6,6 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// SessionFilter using token from cookie to find the cached authentication info,
+// then inject the valid authentication info into gin context.
 func SessionFilter() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		token, err := ctx.Cookie(KeySecToken)
