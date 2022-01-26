@@ -1,8 +1,10 @@
 package fail_test
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"skysight/infra/fail"
@@ -10,6 +12,8 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
+	"github.com/go-sql-driver/mysql"
 	. "github.com/onsi/gomega"
 	"gorm.io/gorm"
 )
@@ -110,7 +114,7 @@ func TestGinErrorHandling(t *testing.T) {
 	})
 }
 
-func TestSpecifiedErrorHandling(t *testing.T) {
+func TestCommonErrorHandling(t *testing.T) {
 	RegisterTestingT(t)
 
 	t.Run("should handle common.ErrForbidden", func(t *testing.T) {
@@ -126,6 +130,23 @@ func TestSpecifiedErrorHandling(t *testing.T) {
 		Expect(body).To(MatchJSON(`{"code":"security.forbidden", "message":"access forbidden", "data": null}`))
 	})
 
+	t.Run("should handle ErrUnauthenticated", func(t *testing.T) {
+		r := gin.Default()
+		r.Use(fail.ErrorHandling())
+
+		r.GET("/", func(c *gin.Context) {
+			_ = c.Error(fail.ErrUnauthenticated)
+		})
+		req := httptest.NewRequest(http.MethodGet, "/", nil)
+		status, body, _ := testinfra.ExecuteRequest(req, r)
+		Expect(status).To(Equal(http.StatusUnauthorized))
+		Expect(body).To(MatchJSON(`{"code":"security.unauthenticated", "message":"unauthenticated", "data": null}`))
+	})
+}
+
+func TestThirdpartErrorHandling(t *testing.T) {
+	RegisterTestingT(t)
+
 	t.Run("should handle gorm.ErrRecordNotFound", func(t *testing.T) {
 		r := gin.Default()
 		r.Use(fail.ErrorHandling())
@@ -137,6 +158,58 @@ func TestSpecifiedErrorHandling(t *testing.T) {
 		status, body, _ := testinfra.ExecuteRequest(req, r)
 		Expect(status).To(Equal(http.StatusNotFound))
 		Expect(body).To(MatchJSON(`{"code":"common.record_not_found", "message":"record not found", "data": null}`))
+	})
+
+	t.Run("should handle io.EOF", func(t *testing.T) {
+		r := gin.Default()
+		r.Use(fail.ErrorHandling())
+
+		r.GET("/", func(c *gin.Context) {
+			c.Error(io.EOF)
+		})
+		req := httptest.NewRequest(http.MethodGet, "/", nil)
+		status, body, _ := testinfra.ExecuteRequest(req, r)
+		Expect(status).To(Equal(http.StatusBadRequest))
+		Expect(body).To(MatchJSON(`{"code":"bad_request.body_not_found", "message":"body not found", "data": null}`))
+	})
+
+	t.Run("should handle json.SyntaxError", func(t *testing.T) {
+		r := gin.Default()
+		r.Use(fail.ErrorHandling())
+
+		r.GET("/", func(c *gin.Context) {
+			c.Error(&json.SyntaxError{})
+		})
+		req := httptest.NewRequest(http.MethodGet, "/", nil)
+		status, body, _ := testinfra.ExecuteRequest(req, r)
+		Expect(status).To(Equal(http.StatusBadRequest))
+		Expect(body).To(MatchJSON(`{"code":"bad_request.invalid_body_format", "message":"invalid body format", "data": ""}`))
+	})
+
+	t.Run("should handle validator.ValidationErrors", func(t *testing.T) {
+		r := gin.Default()
+		r.Use(fail.ErrorHandling())
+
+		r.GET("/", func(c *gin.Context) {
+			c.Error(validator.ValidationErrors{})
+		})
+		req := httptest.NewRequest(http.MethodGet, "/", nil)
+		status, body, _ := testinfra.ExecuteRequest(req, r)
+		Expect(status).To(Equal(http.StatusBadRequest))
+		Expect(body).To(MatchJSON(`{"code":"bad_request.validation_failed", "message":"validation failed", "data": ""}`))
+	})
+
+	t.Run("should handle mysql.ErrInvalidConn", func(t *testing.T) {
+		r := gin.Default()
+		r.Use(fail.ErrorHandling())
+
+		r.GET("/", func(c *gin.Context) {
+			c.Error(mysql.ErrInvalidConn)
+		})
+		req := httptest.NewRequest(http.MethodGet, "/", nil)
+		status, body, _ := testinfra.ExecuteRequest(req, r)
+		Expect(status).To(Equal(http.StatusServiceUnavailable))
+		Expect(body).To(MatchJSON(`{"code":"common.internal_server_error", "message":"invalid connection", "data": null}`))
 	})
 }
 

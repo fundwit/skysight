@@ -18,7 +18,7 @@ func TestErrBadParam(t *testing.T) {
 
 	t.Run("should invoke the Error() function of cause property if cause is not nil", func(t *testing.T) {
 		err := fail.ErrBadParam{Cause: fail.ErrForbidden}
-		Expect(err.Error()).To(Equal("forbidden"))
+		Expect(err.Error()).To(Equal("security.forbidden"))
 	})
 
 	t.Run("should return default message if cause is nil", func(t *testing.T) {

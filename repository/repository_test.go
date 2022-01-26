@@ -8,6 +8,7 @@ import (
 	"skysight/repository"
 	"skysight/testinfra"
 	"testing"
+	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/fundwit/go-commons/types"
@@ -30,8 +31,9 @@ func TestRepositoryTableCreation(t *testing.T) {
 		gormDB, mock := testinfra.SetUpMockSql()
 		const sqlExpr = "CREATE TABLE `repositories` (" +
 			"`id` BIGINT UNSIGNED NOT NULL," +
-			"`uri` VARCHAR(512) NOT NULL," +
+			"`uri` VARCHAR(300) NOT NULL," +
 			"`create_time` DATETIME(6) NOT NULL," +
+			"`last_sync_time` DATETIME(6) NULl," +
 			"PRIMARY KEY (`id`)" +
 			")"
 
@@ -50,16 +52,16 @@ func TestCreateRepository(t *testing.T) {
 	t.Run("should be able to create repository", func(t *testing.T) {
 		_, mock := testinfra.SetUpMockSql()
 
-		const sqlExpr = "INSERT INTO `repositories` (`uri`,`create_time`,`id`) VALUES (?,?,?)"
+		const sqlExpr = "INSERT INTO `repositories` (`uri`,`create_time`,`last_sync_time`,`id`) VALUES (?,?,?,?)"
 		mock.ExpectBegin()
 		mock.ExpectExec(regexp.QuoteMeta(sqlExpr)).
-			WithArgs("http://aaa", testinfra.AnyArgument{}, testinfra.AnyArgument{}).
+			WithArgs("http://aaa", testinfra.AnyPastTime{Range: 3 * time.Second}, types.Timestamp{}, testinfra.AnyId{}).
 			WillReturnResult(sqlmock.NewResult(1, 1))
 		mock.ExpectCommit()
 
 		mock.ExpectBegin()
 		mock.ExpectExec(regexp.QuoteMeta(sqlExpr)).
-			WithArgs("bad-value", testinfra.AnyArgument{}, testinfra.AnyArgument{}).
+			WithArgs("bad-value", testinfra.AnyPastTime{Range: 3 * time.Second}, types.Timestamp{}, testinfra.AnyId{}).
 			WillReturnError(sql.ErrConnDone)
 		mock.ExpectRollback()
 

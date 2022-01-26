@@ -65,23 +65,30 @@ jobs:
         chmod +x jq
         jq --version
 
-        sleep 20
-        cov_data=$(curl -s -H "Authorization: $CODECOV_TOKEN" \
-                  https://codecov.io/api/gh/fundwit/${SERVICE_NAME}/commit/${GITHUB_SHA})
+        for i in `seq 12`; do
+          sleep 5
+          echo "find coverage data try count $i/12"
+          cov_data=$(curl -s -H "Authorization: $CODECOV_TOKEN" \
+                https://codecov.io/api/gh/fundwit/${SERVICE_NAME}/commit/${GITHUB_SHA})
 
-        parent_cov=$(echo $cov_data | jq -r .commit.parent_totals.c)
-        current_cov=$(echo $cov_data | jq -r .commit.totals.c)
+          parent_cov=$(echo $cov_data | jq -r .commit.parent_totals.c)
+          current_cov=$(echo $cov_data | jq -r .commit.totals.c)
+          if [ "$current_cov" != "" -a "$current_cov" != "null" ]; then
+            break
+          fi
+        done
+
         if [ "$current_cov" == "" -o "$current_cov" == "null" ]; then
-          echo "error: coverage data not found"
+          echo "error: coverage data not found in 1 min"
           echo $cov_data
           exit 1
         fi
-        
+
         if [ "$parent_cov" == "" -o "$parent_cov" == "null" ]; then
            echo "coverage of parent not found, set to 0"
            parent_cov=0
         fi
-        
+
         echo "coverage change: ${parent_cov} => ${current_cov} " $(echo "$current_cov - $parent_cov" | bc)
 
         if [ `echo "${current_cov} < ${parent_cov}"|bc` -eq 1 ] ; then

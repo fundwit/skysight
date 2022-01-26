@@ -127,6 +127,55 @@ var doc = `{
                     }
                 }
             }
+        },
+        "/v1/runs": {
+            "get": {
+                "operationId": "sync-runs-list",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "repository uri",
+                        "name": "repoUri",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/sync.SyncRecord"
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "error",
+                        "schema": {
+                            "$ref": "#/definitions/fail.ErrorBody"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/schedules": {
+            "post": {
+                "operationId": "create-sync-schedule-request",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "default": {
+                        "description": "error",
+                        "schema": {
+                            "$ref": "#/definitions/fail.ErrorBody"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -184,7 +233,7 @@ var doc = `{
             "properties": {
                 "uri": {
                     "type": "string",
-                    "maxLength": 250
+                    "maxLength": 300
                 }
             }
         },
@@ -200,9 +249,38 @@ var doc = `{
                 "id": {
                     "type": "integer"
                 },
+                "lastSyncTime": {
+                    "type": "string"
+                },
                 "uri": {
                     "type": "string",
-                    "maxLength": 250
+                    "maxLength": 300
+                }
+            }
+        },
+        "sync.SyncRecord": {
+            "type": "object",
+            "properties": {
+                "beginTime": {
+                    "type": "string"
+                },
+                "createTime": {
+                    "type": "string"
+                },
+                "endTime": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "repoUri": {
+                    "type": "string"
+                },
+                "rootCause": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "integer"
                 }
             }
         }

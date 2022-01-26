@@ -7,23 +7,8 @@ import (
 
 var ErrUnexpected = errors.New("common.internal_server_error")
 var ErrInvalidArguments = errors.New("invalid arguments")
-var ErrUnauthenticated = errors.New("unauthenticated")
-var ErrForbidden = errors.New("forbidden")
-
-var ErrWorkflowIsReferenced = errors.New("workflow is referenced")
-var ErrUnknownState = errors.New("unknown workflow state")
-var ErrStateExisted = errors.New("state existed")
-var ErrStateInvalid = errors.New("state is invalid")
-var ErrStateCategoryInvalid = errors.New("state category is invalid")
-var ErrArchiveStatusInvalid = errors.New("archive status is invalid")
-var ErrWorkProcessStepStateInvalid = errors.New("state of work process step is invalid")
-
-var ErrLabelNotFound = errors.New("label not found")
-var ErrLabelIsReferenced = errors.New("label is referenced")
-
-var ErrPropertyDefinitionInvalid = errors.New("invalid property definition")
-var ErrPropertyDefinitionNotFound = errors.New("property definition not found")
-var ErrPropertyDefinitionIsReferenced = errors.New("property definition is referenced")
+var ErrUnauthenticated = errors.New("security.unauthenticated")
+var ErrForbidden = errors.New("security.forbidden")
 
 var ErrNotFound = errors.New("not found")
 var ErrNoContent = errors.New("no content")

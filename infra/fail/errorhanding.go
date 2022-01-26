@@ -73,22 +73,12 @@ func HandleError(c *gin.Context, err error) {
 	}
 
 	if errors.Is(genericErr, ErrUnauthenticated) {
-		c.JSON(http.StatusUnauthorized, &ErrorBody{Code: "common.unauthenticated", Message: "unauthenticated"})
+		c.JSON(http.StatusUnauthorized, &ErrorBody{Code: ErrUnauthenticated.Error(), Message: "unauthenticated"})
 		c.Abort()
 		return
 	}
 	if errors.Is(genericErr, ErrForbidden) {
-		c.JSON(http.StatusForbidden, &ErrorBody{Code: "security.forbidden", Message: "access forbidden"})
-		c.Abort()
-		return
-	}
-	if errors.Is(genericErr, ErrUnknownState) {
-		c.JSON(http.StatusBadRequest, &ErrorBody{Code: "workflow.unknown_state", Message: "unknown state"})
-		c.Abort()
-		return
-	}
-	if errors.Is(genericErr, ErrStateExisted) {
-		c.JSON(http.StatusBadRequest, &ErrorBody{Code: "workflow.state_existed", Message: "state existed"})
+		c.JSON(http.StatusForbidden, &ErrorBody{Code: ErrForbidden.Error(), Message: "access forbidden"})
 		c.Abort()
 		return
 	}

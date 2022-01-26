@@ -57,7 +57,7 @@ func TestQueryRepositoriesAPI(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, repository.PathRepositories, nil)
 		status, body, _ := testinfra.ExecuteRequest(req, router)
 		Expect(status).To(Equal(http.StatusOK))
-		Expect(body).To(MatchJSON(`[{"id": "123", "uri": "http://xxxx", "createTime": "` + timeString + `"}]`))
+		Expect(body).To(MatchJSON(`[{"id": "123", "uri": "http://xxxx", "lastSyncTime": null, "createTime": "` + timeString + `"}]`))
 		Expect(q1).To(Equal(repository.RepositoryQuery{}))
 	})
 }

@@ -18,7 +18,7 @@ var (
 )
 
 type Repository struct {
-	Uri string `json:"uri" binding:"required,lte=250" gorm:"size:512;type:VARCHAR(512) NOT NULL"`
+	Uri string `json:"uri" binding:"required,lte=300" gorm:"size:300;type:VARCHAR(300) NOT NULL"`
 }
 
 type RepositoryRecord struct {
@@ -26,11 +26,12 @@ type RepositoryRecord struct {
 
 	Repository
 
-	CreateTime types.Timestamp `json:"createTime" gorm:"type:DATETIME(6) NOT NULL"`
+	CreateTime   types.Timestamp `json:"createTime" gorm:"type:DATETIME(6) NOT NULL"`
+	LastSyncTime types.Timestamp `json:"lastSyncTime" gorm:"type:DATETIME(6) NULl"`
 }
 
 type RepositoryQuery struct {
-	Keyword string `form:"keyword" binding:"required,lte=250"`
+	Keyword string `form:"keyword" binding:"required,lte=300"`
 }
 
 func (r *RepositoryRecord) TableName() string {

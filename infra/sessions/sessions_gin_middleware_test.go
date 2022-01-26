@@ -27,7 +27,7 @@ func TestSessionFilter(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "/", nil)
 		status, body, _ := testinfra.ExecuteRequest(req, engine)
 		Expect(status).To(Equal(http.StatusUnauthorized))
-		Expect(body).To(MatchJSON(`{"code":"common.unauthenticated", "message": "unauthenticated", "data": null}`))
+		Expect(body).To(MatchJSON(`{"code":"security.unauthenticated", "message": "unauthenticated", "data": null}`))
 	})
 
 	t.Run("unauthenticated response when token is invalid", func(t *testing.T) {
@@ -35,7 +35,7 @@ func TestSessionFilter(t *testing.T) {
 		req.Header.Add("cookie", "sec_token=absent")
 		status, body, _ := testinfra.ExecuteRequest(req, engine)
 		Expect(status).To(Equal(http.StatusUnauthorized))
-		Expect(body).To(MatchJSON(`{"code":"common.unauthenticated", "message": "unauthenticated", "data": null}`))
+		Expect(body).To(MatchJSON(`{"code":"security.unauthenticated", "message": "unauthenticated", "data": null}`))
 	})
 
 	t.Run("unauthenticated response when authentication type is invalid", func(t *testing.T) {
@@ -45,7 +45,7 @@ func TestSessionFilter(t *testing.T) {
 		req.Header.Add("cookie", "sec_token=a")
 		status, body, _ := testinfra.ExecuteRequest(req, engine)
 		Expect(status).To(Equal(http.StatusUnauthorized))
-		Expect(body).To(MatchJSON(`{"code":"common.unauthenticated", "message": "unauthenticated", "data": null}`))
+		Expect(body).To(MatchJSON(`{"code":"security.unauthenticated", "message": "unauthenticated", "data": null}`))
 	})
 
 	t.Run("access is granted when token and authentication both valid", func(t *testing.T) {

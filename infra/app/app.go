@@ -6,13 +6,11 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"skysight/infra/doc"
+	"skysight/infra/assemble"
 	"skysight/infra/fail"
 	"skysight/infra/localize"
-	"skysight/infra/meta"
 	"skysight/infra/persistence"
 	"skysight/infra/tracing"
-	"skysight/repository"
 	"strconv"
 	"syscall"
 	"time"
@@ -61,8 +59,12 @@ func Bootstrap() {
 		logrus.Fatalf("database setting: open db: %v\n", err)
 	}
 	defer persistence.StopGormDB(gormDB)
+
+	if err := gormDB.AutoMigrate(assemble.AutoMigrations...); err != nil {
+		logrus.Fatalf("database setting: auto migration: %v\n", err)
+	}
+
 	persistence.ActiveGormDB = gormDB
-	gormDB.AutoMigrate(&repository.RepositoryRecord{})
 	logrus.Infoln("database setting success")
 
 	// http server
@@ -76,9 +78,9 @@ func Bootstrap() {
 		// gin.Recovery(),
 	)
 
-	repository.RegisterRepositoriesRestAPI(engine)
-	meta.RegisterMetaRestAPI(engine)
-	doc.RegisterDocsAPI(engine)
+	for _, register := range assemble.RestAPIRegistry {
+		register(engine)
+	}
 
 	StartHTTPServer(engine)
 }

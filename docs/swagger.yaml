@@ -34,7 +34,7 @@ definitions:
   repository.Repository:
     properties:
       uri:
-        maxLength: 250
+        maxLength: 300
         type: string
     required:
     - uri
@@ -45,11 +45,30 @@ definitions:
         type: string
       id:
         type: integer
+      lastSyncTime:
+        type: string
       uri:
-        maxLength: 250
+        maxLength: 300
         type: string
     required:
     - uri
+    type: object
+  sync.SyncRecord:
+    properties:
+      beginTime:
+        type: string
+      createTime:
+        type: string
+      endTime:
+        type: string
+      id:
+        type: integer
+      repoUri:
+        type: string
+      rootCause:
+        type: string
+      state:
+        type: integer
     type: object
 info:
   contact: {}
@@ -114,6 +133,37 @@ paths:
       responses:
         "204":
           description: response body is empty
+          schema:
+            type: string
+        default:
+          description: error
+          schema:
+            $ref: '#/definitions/fail.ErrorBody'
+  /v1/runs:
+    get:
+      operationId: sync-runs-list
+      parameters:
+      - description: repository uri
+        in: query
+        name: repoUri
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/sync.SyncRecord'
+            type: array
+        default:
+          description: error
+          schema:
+            $ref: '#/definitions/fail.ErrorBody'
+  /v1/schedules:
+    post:
+      operationId: create-sync-schedule-request
+      responses:
+        "200":
+          description: OK
           schema:
             type: string
         default:
